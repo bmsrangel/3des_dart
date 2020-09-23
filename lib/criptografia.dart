@@ -5,8 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dart_des/dart_des.dart';
 
 class Criptografia {
-  static final String _salt = '#6KVYdPD7wYz2+JQ4LZ2nhA7l2m642r\$';
-  // static final String _salt = '#6KVYdPD7wYz2+JQ4LZ2nhA7l2m642r';
+  static final String _salt = '<Salt here>';
 
   static String criptografar(String conteudo) {
     if (conteudo.isEmpty) {
