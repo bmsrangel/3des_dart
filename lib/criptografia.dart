@@ -1,46 +1,36 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:tripledes/tripledes.dart';
+import 'package:dart_des/dart_des.dart';
 
 class Criptografia {
-  static final String _salt = "#6KVYdPD7wYz2+JQ4LZ2nhA712m642r\$";
+  static final String _salt = '#6KVYdPD7wYz2+JQ4LZ2nhA7l2m642r\$';
+  // static final String _salt = '#6KVYdPD7wYz2+JQ4LZ2nhA7l2m642r';
 
   static String criptografar(String conteudo) {
     if (conteudo.isEmpty) {
       return null;
     }
-    var results;
+    List<int> results;
     List<int> tdesKey = md5.convert(utf8.encode(_salt)).bytes;
-    // DES3 tdesAlgorithm = DES3(key: tdesKey, mode: DESMode.ECB);
-    var blockCipher = BlockCipher(TripleDESEngine(), _salt);
-    // tdesAlgorithm.key = tdesKey;
-    List<int> dataToEncrypt = utf8.encode(conteudo);
+    DES3 tdesAlgorithm = DES3(key: tdesKey, mode: DESMode.ECB);
+    List<int> originalDataToEncrypt = utf8.encode(conteudo);
+    List<int> filledDataToEncrypt = completeDataArray(originalDataToEncrypt);
 
     try {
-      // results = tdesAlgorithm.process(dataToEncrypt);
-      results = blockCipher.encodeB64(conteudo);
-      // results = blockCipher.decodeB64('Js3423@!nx');
+      results = tdesAlgorithm.encrypt(filledDataToEncrypt);
+      print(results);
     } finally {}
-    return results;
+    return base64Encode(results);
   }
 
-  static String decriptografar(String conteudo) {
-    if (conteudo.isEmpty) {
-      return null;
+  static List<int> completeDataArray(List<int> dataToBeEncrypted) {
+    List<int> filledDataToEncrypt =
+        Uint8List((dataToBeEncrypted.length / 8).ceil() * 8);
+    for (var i = 0; i < dataToBeEncrypted.length; i++) {
+      filledDataToEncrypt[i] = dataToBeEncrypted[i];
     }
-    var results;
-    List<int> tdesKey = md5.convert(utf8.encode(_salt)).bytes;
-    // DES3 tdesAlgorithm = DES3(key: tdesKey, mode: DESMode.ECB);
-    var blockCipher = BlockCipher(TripleDESEngine(), _salt);
-    // tdesAlgorithm.key = tdesKey;
-    List<int> dataToEncrypt = utf8.encode(conteudo);
-
-    try {
-      // results = tdesAlgorithm.process(dataToEncrypt);
-      results = blockCipher.decodeB64(conteudo);
-      // results = blockCipher.decodeB64('Js3423@!nx');
-    } finally {}
-    return results;
+    return filledDataToEncrypt;
   }
 }
